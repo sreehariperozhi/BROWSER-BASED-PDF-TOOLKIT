@@ -27,10 +27,10 @@ export default function CompressTool() {
       const compressedPdf = await compressPDF(file.file, quality);
 
       setProcessing({ progress: 90, message: 'Preparing download...' });
-      
+
       const filename = `${file.name.replace('.pdf', '')}_compressed.pdf`;
       const saved = await saveFileWithFSA(compressedPdf, filename);
-      
+
       if (!saved) {
         downloadFile(compressedPdf, filename);
       }
@@ -39,10 +39,10 @@ export default function CompressTool() {
       const newSize = compressedPdf.length;
       const reduction = ((originalSize - newSize) / originalSize * 100).toFixed(1);
 
-      setProcessing({ 
-        isProcessing: false, 
-        progress: 100, 
-        message: `Compression complete! Reduced by ${reduction}%` 
+      setProcessing({
+        isProcessing: false,
+        progress: 100,
+        message: `Compression complete! Reduced by ${reduction}%`
       });
       setTimeout(() => setProcessing({ isProcessing: false, progress: 0, message: '' }), 3000);
     } catch (error) {
@@ -57,7 +57,7 @@ export default function CompressTool() {
   const selectedFileObj = files.find((f) => f.id === selectedFile);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-dark-card/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-white/10 p-6">
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -66,7 +66,7 @@ export default function CompressTool() {
           <select
             value={selectedFile}
             onChange={(e) => setSelectedFile(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-panel text-gray-900 dark:text-white focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all"
           >
             <option value="">Choose a file...</option>
             {files.map((file) => (
@@ -85,7 +85,7 @@ export default function CompressTool() {
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setQuality(Math.max(0.1, quality - 0.1))}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded text-gray-600 dark:text-gray-400"
               >
                 <Minus className="w-4 h-4" />
               </button>
@@ -96,11 +96,11 @@ export default function CompressTool() {
                 step="0.1"
                 value={quality}
                 onChange={(e) => setQuality(parseFloat(e.target.value))}
-                className="flex-1"
+                className="flex-1 accent-primary-600 dark:accent-neon-purple"
               />
               <button
                 onClick={() => setQuality(Math.min(1, quality + 0.1))}
-                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded text-gray-600 dark:text-gray-400"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -114,7 +114,7 @@ export default function CompressTool() {
         <button
           onClick={handleCompress}
           disabled={!selectedFile || isProcessing}
-          className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 bg-primary-600 hover:bg-primary-700 dark:bg-neon-purple dark:hover:bg-neon-purple/80 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 shadow-lg shadow-neon-purple/20"
         >
           <FileDown className="w-5 h-5" />
           Compress PDF

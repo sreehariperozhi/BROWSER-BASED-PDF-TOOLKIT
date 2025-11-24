@@ -3,6 +3,7 @@ import { useStore } from '../../store';
 import { splitPDF } from '../../utils/pdf';
 import { downloadZip } from '../../utils/file';
 import { FileDown } from 'lucide-react';
+import Button from '../ui/Button';
 
 export default function SplitTool() {
   const { files, setProcessing } = useStore();
@@ -51,7 +52,7 @@ export default function SplitTool() {
       const splitPdfs = await splitPDF(file.file, pageRanges);
 
       setProcessing({ progress: 80, message: 'Preparing files...' });
-      
+
       const filesToZip = splitPdfs.map((pdf, index) => ({
         data: pdf,
         filename: `${file.name.replace('.pdf', '')}_part${index + 1}.pdf`,
@@ -73,16 +74,16 @@ export default function SplitTool() {
   const selectedFileObj = files.find((f) => f.id === selectedFile);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-dark-card/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-white/10 p-6">
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-heading">
             Select PDF to split
           </label>
           <select
             value={selectedFile}
             onChange={(e) => setSelectedFile(e.target.value)}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-panel text-gray-900 dark:text-white focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all font-sans"
           >
             <option value="">Choose a file...</option>
             {files.map((file) => (
@@ -96,38 +97,38 @@ export default function SplitTool() {
         {selectedFileObj && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-heading">
                 Split mode
               </label>
               <div className="space-y-2">
-                <label className="flex items-center gap-2">
+                <label className="flex items-center gap-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                   <input
                     type="radio"
                     value="all"
                     checked={splitMode === 'all'}
                     onChange={(e) => setSplitMode(e.target.value as 'all' | 'range')}
-                    className="w-4 h-4"
+                    className="w-4 h-4 text-neon-purple border-gray-300 dark:border-gray-600 focus:ring-neon-purple"
                   />
-                  <span className="text-gray-900 dark:text-white">
+                  <span className="text-gray-900 dark:text-white font-sans">
                     Split into individual pages ({selectedFileObj.pages} files)
                   </span>
                 </label>
-                <label className="flex items-center gap-2">
+                <label className="flex items-center gap-2 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
                   <input
                     type="radio"
                     value="range"
                     checked={splitMode === 'range'}
                     onChange={(e) => setSplitMode(e.target.value as 'all' | 'range')}
-                    className="w-4 h-4"
+                    className="w-4 h-4 text-neon-purple border-gray-300 dark:border-gray-600 focus:ring-neon-purple"
                   />
-                  <span className="text-gray-900 dark:text-white">Custom ranges</span>
+                  <span className="text-gray-900 dark:text-white font-sans">Custom ranges</span>
                 </label>
               </div>
             </div>
 
             {splitMode === 'range' && (
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <div className="animate-fade-in">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 font-heading">
                   Page ranges (e.g., "1-5,6-10,11-15")
                 </label>
                 <input
@@ -135,9 +136,9 @@ export default function SplitTool() {
                   value={ranges}
                   onChange={(e) => setRanges(e.target.value)}
                   placeholder="1-5,6-10"
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-panel text-gray-900 dark:text-white focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all font-mono"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 font-sans">
                   Enter comma-separated ranges. Each range will become a separate PDF.
                 </p>
               </div>
@@ -145,14 +146,18 @@ export default function SplitTool() {
           </>
         )}
 
-        <button
-          onClick={handleSplit}
-          disabled={!selectedFile || isProcessing}
-          className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
-        >
-          <FileDown className="w-5 h-5" />
-          Split PDF
-        </button>
+        <div className="pt-4">
+          <Button
+            onClick={handleSplit}
+            disabled={!selectedFile || isProcessing}
+            isLoading={isProcessing}
+            className="w-full"
+            size="lg"
+            icon={FileDown}
+          >
+            Split PDF
+          </Button>
+        </div>
       </div>
     </div>
   );

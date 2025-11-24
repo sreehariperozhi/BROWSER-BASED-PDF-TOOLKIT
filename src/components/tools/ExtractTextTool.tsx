@@ -50,7 +50,7 @@ export default function ExtractTextTool() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-dark-card/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-white/10 p-6">
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -63,7 +63,7 @@ export default function ExtractTextTool() {
               setSelectedPage(0);
               setExtractedText('');
             }}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-panel text-gray-900 dark:text-white focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all"
           >
             <option value="">Choose a file...</option>
             {files.map((file) => (
@@ -85,7 +85,7 @@ export default function ExtractTextTool() {
               max={selectedFileObj.pages}
               value={selectedPage + 1}
               onChange={(e) => setSelectedPage(Math.max(0, Math.min(selectedFileObj.pages - 1, parseInt(e.target.value) - 1)))}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-panel text-gray-900 dark:text-white focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all"
             />
           </div>
         )}
@@ -93,7 +93,7 @@ export default function ExtractTextTool() {
         <button
           onClick={handleExtract}
           disabled={!selectedFile || isProcessing}
-          className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 bg-primary-600 hover:bg-primary-700 dark:bg-neon-purple dark:hover:bg-neon-purple/80 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 shadow-lg shadow-neon-purple/20"
         >
           <FileText className="w-5 h-5" />
           Extract Text
@@ -107,11 +107,11 @@ export default function ExtractTextTool() {
               </label>
               <button
                 onClick={handleCopy}
-                className="flex items-center gap-2 px-3 py-1 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors"
+                className="flex items-center gap-2 px-3 py-1 text-sm bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 rounded transition-colors text-gray-700 dark:text-gray-300"
               >
                 {copied ? (
                   <>
-                    <Check className="w-4 h-4" />
+                    <Check className="w-4 h-4 text-green-500" />
                     Copied!
                   </>
                 ) : (
@@ -125,7 +125,7 @@ export default function ExtractTextTool() {
             <textarea
               value={extractedText}
               readOnly
-              className="w-full h-64 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-mono text-sm"
+              className="w-full h-64 px-4 py-2 border border-gray-300 dark:border-white/10 rounded-lg bg-gray-50 dark:bg-black/20 text-gray-900 dark:text-white font-mono text-sm focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all"
             />
           </div>
         )}

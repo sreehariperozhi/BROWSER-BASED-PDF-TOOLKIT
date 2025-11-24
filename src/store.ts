@@ -11,6 +11,14 @@ interface AppState {
   setSelectedTool: (tool: ToolType | null) => void;
   setProcessing: (state: Partial<ProcessingState>) => void;
   updateFile: (id: string, updates: Partial<PDFFile>) => void;
+  recentFiles: PDFFile[];
+  addToRecent: (file: PDFFile) => void;
+  settings: {
+    particlesEnabled: boolean;
+    soundEnabled: boolean;
+    accentColor: string;
+  };
+  updateSettings: (settings: Partial<AppState['settings']>) => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -30,6 +38,19 @@ export const useStore = create<AppState>((set) => ({
   })),
   updateFile: (id, updates) => set((state) => ({
     files: state.files.map((f) => (f.id === id ? { ...f, ...updates } : f))
+  })),
+  recentFiles: [],
+  addToRecent: (file) => set((state) => {
+    const newRecent = [file, ...state.recentFiles.filter(f => f.id !== file.id)].slice(0, 10);
+    return { recentFiles: newRecent };
+  }),
+  settings: {
+    particlesEnabled: true,
+    soundEnabled: true,
+    accentColor: 'neon-purple',
+  },
+  updateSettings: (newSettings) => set((state) => ({
+    settings: { ...state.settings, ...newSettings }
   })),
 }));
 

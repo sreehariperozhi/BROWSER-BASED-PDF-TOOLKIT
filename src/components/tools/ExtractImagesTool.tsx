@@ -35,7 +35,7 @@ export default function ExtractImagesTool() {
       }
 
       setProcessing({ progress: 80, message: 'Preparing download...' });
-      
+
       const filesToZip = images.map((img, index) => {
         const base64Data = img.split(',')[1];
         const byteCharacters = atob(base64Data);
@@ -64,7 +64,7 @@ export default function ExtractImagesTool() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-dark-card/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-white/10 p-6">
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -76,7 +76,7 @@ export default function ExtractImagesTool() {
               setSelectedFile(e.target.value);
               setSelectedPage(0);
             }}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-panel text-gray-900 dark:text-white focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all"
           >
             <option value="">Choose a file...</option>
             {files.map((file) => (
@@ -98,7 +98,7 @@ export default function ExtractImagesTool() {
               max={selectedFileObj.pages}
               value={selectedPage + 1}
               onChange={(e) => setSelectedPage(Math.max(0, Math.min(selectedFileObj.pages - 1, parseInt(e.target.value) - 1)))}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-panel text-gray-900 dark:text-white focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all"
             />
           </div>
         )}
@@ -106,7 +106,7 @@ export default function ExtractImagesTool() {
         <button
           onClick={handleExtract}
           disabled={!selectedFile || isProcessing}
-          className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 bg-primary-600 hover:bg-primary-700 dark:bg-neon-purple dark:hover:bg-neon-purple/80 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 shadow-lg shadow-neon-purple/20"
         >
           <Image className="w-5 h-5" />
           Extract Images

@@ -3,6 +3,8 @@ import { useStore } from '../../store';
 import { rotatePages } from '../../utils/pdf';
 import { downloadFile, saveFileWithFSA } from '../../utils/file';
 import { FileDown, RotateCw } from 'lucide-react';
+import WorkspaceLayout from '../ui/WorkspaceLayout';
+import Button from '../ui/Button';
 
 export default function RotateTool() {
   const { files, setProcessing } = useStore();
@@ -44,10 +46,10 @@ export default function RotateTool() {
       const rotatedPdf = await rotatePages(file.file, selectedPages, angle);
 
       setProcessing({ progress: 90, message: 'Preparing download...' });
-      
+
       const filename = `${file.name.replace('.pdf', '')}_rotated.pdf`;
       const saved = await saveFileWithFSA(rotatedPdf, filename);
-      
+
       if (!saved) {
         downloadFile(rotatedPdf, filename);
       }
@@ -63,95 +65,148 @@ export default function RotateTool() {
     }
   };
 
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
-      <div className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Select PDF
-          </label>
-          <select
-            value={selectedFile}
-            onChange={(e) => {
-              setSelectedFile(e.target.value);
-              setSelectedPages([]);
-            }}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-          >
-            <option value="">Choose a file...</option>
-            {files.map((file) => (
-              <option key={file.id} value={file.id}>
-                {file.name} ({file.pages} pages)
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {selectedFileObj && (
-          <>
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Select pages to rotate
-                </label>
-                <button
-                  onClick={selectAll}
-                  className="text-sm text-primary-600 hover:text-primary-700"
-                >
-                  Select All
-                </button>
-              </div>
-              <div className="grid grid-cols-5 md:grid-cols-10 gap-2 max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-                {Array.from({ length: selectedFileObj.pages }, (_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => togglePage(i)}
-                    className={`p-2 rounded border transition-colors ${
-                      selectedPages.includes(i)
-                        ? 'bg-primary-600 text-white border-primary-700'
-                        : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Rotation angle
-              </label>
-              <div className="flex gap-4">
-                {[90, 180, 270].map((a) => (
-                  <button
-                    key={a}
-                    onClick={() => setAngle(a)}
-                    className={`flex-1 py-2 rounded-lg border transition-colors ${
-                      angle === a
-                        ? 'bg-primary-600 text-white border-primary-700'
-                        : 'bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
-                    }`}
-                  >
-                    <RotateCw className="w-5 h-5 mx-auto mb-1" />
-                    {a}°
-                  </button>
-                ))}
-              </div>
-            </div>
-          </>
-        )}
-
-        <button
-          onClick={handleRotate}
-          disabled={!selectedFile || selectedPages.length === 0 || isProcessing}
-          className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+  // Panel 1: Steps / Input
+  const stepsPanel = (
+    <div className="space-y-6">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          1. Select PDF
+        </label>
+        <select
+          value={selectedFile}
+          onChange={(e) => {
+            setSelectedFile(e.target.value);
+            setSelectedPages([]);
+          }}
+          className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-panel text-gray-900 dark:text-white focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all"
         >
-          <FileDown className="w-5 h-5" />
-          Rotate Pages
-        </button>
+          <option value="">Choose a file...</option>
+          {files.map((file) => (
+            <option key={file.id} value={file.id}>
+              {file.name} ({file.pages} pages)
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          2. Rotation Angle
+        </label>
+        <div className="grid grid-cols-3 gap-2">
+          {[90, 180, 270].map((a) => (
+            <button
+              key={a}
+              onClick={() => setAngle(a)}
+              className={`py-2 rounded-lg border transition-all flex flex-col items-center justify-center gap-1 ${angle === a
+                ? 'bg-primary-600 dark:bg-neon-purple text-white border-primary-700 dark:border-neon-purple shadow-lg shadow-neon-purple/20'
+                : 'bg-white dark:bg-white/5 border-gray-300 dark:border-white/10 hover:bg-gray-50 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300'
+                }`}
+            >
+              <RotateCw className={`w-4 h-4 ${angle === a ? 'animate-spin' : ''}`} style={{ animationDuration: '3s' }} />
+              <span className="text-xs font-medium">{a}°</span>
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
-}
 
+  // Panel 2: Preview
+  const previewPanel = selectedFileObj ? (
+    <div className="w-full h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4 px-4">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white">
+          Select Pages to Rotate
+        </h3>
+        <button
+          onClick={selectAll}
+          className="text-sm text-primary-600 dark:text-neon-cyan hover:text-primary-700 dark:hover:text-neon-cyan/80 font-medium"
+        >
+          Select All Pages
+        </button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+          {Array.from({ length: selectedFileObj.pages }, (_, i) => (
+            <button
+              key={i}
+              onClick={() => togglePage(i)}
+              className={`aspect-[1/1.4] rounded-lg border-2 transition-all relative group ${selectedPages.includes(i)
+                ? 'border-neon-purple bg-neon-purple/10 shadow-[0_0_15px_rgba(160,107,255,0.3)]'
+                : 'border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-neon-purple/50'
+                }`}
+            >
+              <div className="absolute inset-0 flex items-center justify-center text-lg font-bold text-gray-400 dark:text-gray-500 group-hover:text-neon-purple transition-colors">
+                {i + 1}
+              </div>
+
+              {/* Rotation Indicator Overlay */}
+              {selectedPages.includes(i) && (
+                <div className="absolute inset-0 flex items-center justify-center bg-neon-purple/20 backdrop-blur-[1px] rounded-md">
+                  <RotateCw className="w-8 h-8 text-white drop-shadow-md" style={{ transform: `rotate(${angle}deg)` }} />
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div className="text-center text-gray-500 dark:text-gray-400">
+      <RotateCw className="w-16 h-16 mx-auto mb-4 opacity-20" />
+      <p>Select a PDF file to view pages</p>
+    </div>
+  );
+
+  // Panel 3: Configuration / Action
+  const configPanel = (
+    <div className="space-y-6">
+      <div className="bg-gray-50 dark:bg-white/5 rounded-lg p-4 border border-gray-200 dark:border-white/5">
+        <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-2">Summary</h4>
+        <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+          <li className="flex justify-between">
+            <span>Selected File:</span>
+            <span className="font-medium text-gray-900 dark:text-white truncate max-w-[150px]">
+              {selectedFileObj?.name || '-'}
+            </span>
+          </li>
+          <li className="flex justify-between">
+            <span>Pages to Rotate:</span>
+            <span className="font-medium text-gray-900 dark:text-white">
+              {selectedPages.length}
+            </span>
+          </li>
+          <li className="flex justify-between">
+            <span>Rotation Angle:</span>
+            <span className="font-medium text-gray-900 dark:text-white">
+              {angle}°
+            </span>
+          </li>
+        </ul>
+      </div>
+
+      <Button
+        onClick={handleRotate}
+        disabled={!selectedFile || selectedPages.length === 0 || isProcessing}
+        isLoading={isProcessing}
+        className="w-full"
+        size="lg"
+        icon={FileDown}
+      >
+        Rotate Pages
+      </Button>
+    </div>
+  );
+
+  return (
+    <WorkspaceLayout
+      title="Rotate PDF Pages"
+      description="Permanently rotate specific pages in your PDF document."
+      stepsPanel={stepsPanel}
+      previewPanel={previewPanel}
+      configPanel={configPanel}
+    />
+  );
+}

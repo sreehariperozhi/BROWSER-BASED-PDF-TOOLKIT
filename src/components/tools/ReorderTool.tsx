@@ -46,10 +46,10 @@ export default function ReorderTool() {
       const reorderedPdf = await reorderPages(file.file, pageOrder);
 
       setProcessing({ progress: 90, message: 'Preparing download...' });
-      
+
       const filename = `${file.name.replace('.pdf', '')}_reordered.pdf`;
       const saved = await saveFileWithFSA(reorderedPdf, filename);
-      
+
       if (!saved) {
         downloadFile(reorderedPdf, filename);
       }
@@ -66,7 +66,7 @@ export default function ReorderTool() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-dark-card/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-white/10 p-6">
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -78,7 +78,7 @@ export default function ReorderTool() {
               setSelectedFile(e.target.value);
               initializeOrder(e.target.value);
             }}
-            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-dark-panel text-gray-900 dark:text-white focus:ring-2 focus:ring-neon-purple/50 focus:border-neon-purple outline-none transition-all"
           >
             <option value="">Choose a file...</option>
             {files.map((file) => (
@@ -94,11 +94,31 @@ export default function ReorderTool() {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Drag pages to reorder (or use arrows)
             </label>
-            <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+            <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 dark:border-white/10 rounded-lg p-4 bg-gray-50 dark:bg-black/20">
               {pageOrder.map((pageIndex, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded hover:bg-gray-100 dark:hover:bg-gray-600"
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.setData('text/plain', index.toString());
+                    e.currentTarget.classList.add('opacity-50', 'scale-105', 'shadow-2xl');
+                  }}
+                  onDragEnd={(e) => {
+                    e.currentTarget.classList.remove('opacity-50', 'scale-105', 'shadow-2xl');
+                  }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+                    const toIndex = index;
+                    if (fromIndex !== toIndex) {
+                      const newOrder = [...pageOrder];
+                      const [movedPage] = newOrder.splice(fromIndex, 1);
+                      newOrder.splice(toIndex, 0, movedPage);
+                      setPageOrder(newOrder);
+                    }
+                  }}
+                  className="flex items-center gap-2 p-2 bg-white dark:bg-white/5 rounded border border-gray-200 dark:border-white/5 hover:border-neon-purple/30 transition-all cursor-move hover:shadow-md active:cursor-grabbing"
                 >
                   <GripVertical className="w-4 h-4 text-gray-400" />
                   <span className="flex-1 text-gray-900 dark:text-white">
@@ -107,14 +127,14 @@ export default function ReorderTool() {
                   <button
                     onClick={() => movePage(index, 'up')}
                     disabled={index === 0}
-                    className="p-1 hover:bg-gray-200 dark:hover:bg-gray-500 rounded disabled:opacity-50"
+                    className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded disabled:opacity-50 text-gray-500 dark:text-gray-400"
                   >
                     <ArrowUp className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => movePage(index, 'down')}
                     disabled={index === pageOrder.length - 1}
-                    className="p-1 hover:bg-gray-200 dark:hover:bg-gray-500 rounded disabled:opacity-50"
+                    className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded disabled:opacity-50 text-gray-500 dark:text-gray-400"
                   >
                     <ArrowDown className="w-4 h-4" />
                   </button>
@@ -127,7 +147,7 @@ export default function ReorderTool() {
         <button
           onClick={handleReorder}
           disabled={!selectedFile || pageOrder.length === 0 || isProcessing}
-          className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 bg-primary-600 hover:bg-primary-700 dark:bg-neon-purple dark:hover:bg-neon-purple/80 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 shadow-lg shadow-neon-purple/20"
         >
           <FileDown className="w-5 h-5" />
           Save Reordered PDF

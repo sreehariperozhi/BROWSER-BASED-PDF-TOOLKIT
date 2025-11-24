@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Configure pdf.js worker
 import * as pdfjsLib from 'pdfjs-dist';
@@ -18,9 +19,11 @@ if (!rootElement) {
 console.log('Mounting React app...');
 
 try {
-    ReactDOM.createRoot(rootElement).render(
+  ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
-      <App />
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
     </React.StrictMode>
   );
   console.log('React app mounted successfully');
@@ -34,4 +37,3 @@ try {
     </div>
   `;
 }
-

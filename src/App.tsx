@@ -1,20 +1,64 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from './store';
-import ToolGrid from './components/ToolGrid';
-import FileDropZone from './components/FileDropZone';
 import ToolView from './components/ToolView';
 import PrivacyNotice from './components/PrivacyNotice';
+import Sidebar from './components/Sidebar';
+import TopBar from './components/TopBar';
+import Settings from './components/Settings';
+import ParticleBackground from './components/ui/ParticleBackground';
+import Dashboard from './components/Dashboard';
+import { useSwipeGesture } from './hooks/useSwipeGesture';
 
 function App() {
-  console.log('App component rendering...');
-  
-  const { selectedTool } = useStore();
-  console.log('Store accessed, selectedTool:', selectedTool);
+  const { selectedTool, setSelectedTool } = useStore();
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
+  // Keyboard shortcuts
   useEffect(() => {
-    console.log('App mounted, selectedTool:', selectedTool);
-  }, [selectedTool]);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger if user is typing in an input/textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
 
+      // Escape key - close tool/go home
+      if (e.key === 'Escape') {
+        if (isSettingsOpen) {
+          setIsSettingsOpen(false);
+        } else if (selectedTool) {
+          setSelectedTool(null);
+        }
+      }
+
+      // Backspace - go back (when not in input)
+      if (e.key === 'Backspace' && selectedTool) {
+        e.preventDefault();
+        setSelectedTool(null);
+      }
+
+      // Alt + Left Arrow - browser-style back
+      if (e.altKey && e.key === 'ArrowLeft' && selectedTool) {
+        e.preventDefault();
+        setSelectedTool(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedTool, isSettingsOpen, setSelectedTool]);
+
+  // Swipe gestures for mobile
+  useSwipeGesture({
+    onSwipeLeft: () => {
+      // Swipe left to go back (if on a tool page)
+      if (selectedTool) {
+        setSelectedTool(null);
+      }
+    },
+  });
+
+  // PWA logic temporarily disabled for development
+  /*
   useEffect(() => {
     // Register service worker for PWA
     if ('serviceWorker' in navigator) {
@@ -33,53 +77,33 @@ function App() {
       });
     }
   }, []);
+  */
 
-  try {
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-300 flex overflow-hidden relative">
+      <ParticleBackground />
+      <div className="fixed inset-0 pointer-events-none z-0 bg-gradient-to-br from-transparent to-primary-500/5 dark:to-neon-purple/10 transition-colors duration-500" />
 
-    return (
-      <div style={{ minHeight: '100vh', backgroundColor: '#f9fafb', padding: '0' }}>
-        <div style={{ backgroundColor: 'white', borderBottom: '1px solid #e5e7eb', padding: '1rem' }}>
-          <div style={{ maxWidth: '1280px', margin: '0 auto', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <h1 style={{ fontSize: '1.25rem', fontWeight: 'bold', color: '#111827', margin: 0 }}>
-              PDF Toolkit
-            </h1>
-          </div>
-        </div>
-        
-        <main style={{ maxWidth: '1280px', margin: '0 auto', padding: '2rem 1rem' }}>
-          <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
-            <h1 style={{ fontSize: '2.25rem', fontWeight: 'bold', color: '#111827', marginBottom: '1rem' }}>
-              PDF Toolkit
-            </h1>
-            <p style={{ fontSize: '1.125rem', color: '#4b5563', maxWidth: '42rem', margin: '0 auto' }}>
-              100% client-side PDF tools. Your files never leave your device.
-              No uploads, no tracking, no ads.
-            </p>
-          </div>
-          
+      <TopBar onOpenSettings={() => setIsSettingsOpen(true)} />
+      <Sidebar />
+
+      <main className="flex-1 pt-16 pl-20 h-screen overflow-y-auto bg-gray-50 dark:bg-dark-bg/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full">
           <PrivacyNotice />
-          
+
           {!selectedTool ? (
-            <>
-              <FileDropZone />
-              <ToolGrid />
-            </>
+            <Dashboard />
           ) : (
-            <ToolView />
+            <div className="h-full animate-fade-in">
+              <ToolView />
+            </div>
           )}
-        </main>
-      </div>
-    );
-  } catch (error) {
-    console.error('Error in App render:', error);
-    return (
-      <div style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-        <h1 style={{ color: 'red' }}>Error Loading App</h1>
-        <p>{error instanceof Error ? error.message : 'Unknown error'}</p>
-        <p>Check the browser console for more details.</p>
-      </div>
-    );
-  }
+        </div>
+      </main>
+
+      <Settings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+    </div>
+  );
 }
 
 export default App;

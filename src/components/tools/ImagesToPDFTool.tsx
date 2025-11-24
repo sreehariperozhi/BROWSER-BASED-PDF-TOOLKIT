@@ -11,11 +11,11 @@ export default function ImagesToPDFTool() {
 
   const handleFileSelect = useCallback((fileList: FileList | null) => {
     if (!fileList) return;
-    
+
     const imageFiles = Array.from(fileList).filter(
       (file) => file.type.startsWith('image/')
     );
-    
+
     setSelectedImages((prev) => [...prev, ...imageFiles]);
   }, []);
 
@@ -56,10 +56,10 @@ export default function ImagesToPDFTool() {
       const pdf = await imagesToPDF(selectedImages);
 
       setProcessing({ progress: 90, message: 'Preparing download...' });
-      
+
       const filename = `images_${Date.now()}.pdf`;
       const saved = await saveFileWithFSA(pdf, filename);
-      
+
       if (!saved) {
         downloadFile(pdf, filename);
       }
@@ -76,14 +76,14 @@ export default function ImagesToPDFTool() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-dark-card/50 backdrop-blur-sm rounded-xl border border-gray-200 dark:border-white/10 p-6">
       <div className="space-y-6">
         <div
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-          className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center hover:border-primary-400 dark:hover:border-primary-600 transition-colors"
+          className="border-2 border-dashed border-gray-300 dark:border-white/10 rounded-xl p-8 text-center hover:border-primary-400 dark:hover:border-neon-purple/50 transition-colors bg-gray-50 dark:bg-white/5"
         >
-          <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+          <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400 dark:text-gray-500" />
           <p className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
             Drop images here or click to browse
           </p>
@@ -95,7 +95,7 @@ export default function ImagesToPDFTool() {
               onChange={(e) => handleFileSelect(e.target.files)}
               className="hidden"
             />
-            <span className="inline-block px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg cursor-pointer transition-colors">
+            <span className="inline-block px-6 py-2 bg-primary-600 hover:bg-primary-700 dark:bg-neon-purple dark:hover:bg-neon-purple/80 text-white rounded-lg cursor-pointer transition-colors font-medium shadow-lg shadow-neon-purple/20">
               Select Images
             </span>
           </label>
@@ -106,11 +106,11 @@ export default function ImagesToPDFTool() {
             <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
               Selected Images ({selectedImages.length}) - Order matters
             </h3>
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="space-y-2 max-h-96 overflow-y-auto border border-gray-200 dark:border-white/10 rounded-lg p-4 bg-gray-50 dark:bg-black/20">
               {selectedImages.map((image, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+                  className="flex items-center gap-3 p-3 bg-white dark:bg-white/5 rounded-lg border border-gray-200 dark:border-white/5 hover:border-neon-purple/30 transition-colors"
                 >
                   <img
                     src={URL.createObjectURL(image)}
@@ -129,7 +129,7 @@ export default function ImagesToPDFTool() {
                     <button
                       onClick={() => moveImage(index, 'up')}
                       disabled={index === 0}
-                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded disabled:opacity-50"
+                      className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded disabled:opacity-50 text-gray-500 dark:text-gray-400"
                       title="Move up"
                     >
                       ↑
@@ -137,14 +137,14 @@ export default function ImagesToPDFTool() {
                     <button
                       onClick={() => moveImage(index, 'down')}
                       disabled={index === selectedImages.length - 1}
-                      className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded disabled:opacity-50"
+                      className="p-1 hover:bg-gray-100 dark:hover:bg-white/10 rounded disabled:opacity-50 text-gray-500 dark:text-gray-400"
                       title="Move down"
                     >
                       ↓
                     </button>
                     <button
                       onClick={() => removeImage(index)}
-                      className="p-1 hover:bg-red-100 dark:hover:bg-red-900 rounded"
+                      className="p-1 hover:bg-red-100 dark:hover:bg-red-900/30 rounded"
                       title="Remove"
                     >
                       <X className="w-4 h-4 text-red-600 dark:text-red-400" />
@@ -159,7 +159,7 @@ export default function ImagesToPDFTool() {
         <button
           onClick={handleConvert}
           disabled={selectedImages.length === 0 || isProcessing}
-          className="w-full py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full py-3 bg-primary-600 hover:bg-primary-700 dark:bg-neon-purple dark:hover:bg-neon-purple/80 disabled:bg-gray-400 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 shadow-lg shadow-neon-purple/20"
         >
           <FileDown className="w-5 h-5" />
           Create PDF
