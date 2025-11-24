@@ -4,6 +4,7 @@ import ToolView from './components/ToolView';
 import PrivacyNotice from './components/PrivacyNotice';
 import Sidebar from './components/Sidebar';
 import TopBar from './components/TopBar';
+import Footer from './components/Footer';
 import Settings from './components/Settings';
 import ParticleBackground from './components/ui/ParticleBackground';
 import Dashboard from './components/Dashboard';
@@ -101,6 +102,7 @@ function App() {
         </div>
       </main>
 
+      <Footer />
       <Settings isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
     </div>
   );
