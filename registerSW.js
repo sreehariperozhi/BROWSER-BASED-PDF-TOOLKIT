@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/BROWSER-BASED-PDF-TOOLKIT/sw.js', { scope: '/BROWSER-BASED-PDF-TOOLKIT/' })})}
