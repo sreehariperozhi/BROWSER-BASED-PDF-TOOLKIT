@@ -40,7 +40,7 @@ export default function TopBar({ onOpenSettings }: TopBarProps) {
                     onClick={goHome}
                     className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-neon-purple to-neon-cyan tracking-tight hover:scale-105 transition-transform cursor-pointer font-heading group relative"
                 >
-                    PDF Toolkit
+                    FT.PDF
                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-neon-purple to-neon-cyan group-hover:w-full transition-all duration-300"></span>
                 </button>
             </div>
