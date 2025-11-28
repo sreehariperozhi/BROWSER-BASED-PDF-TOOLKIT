@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useStore } from '../../store';
-import { rotatePages } from '../../utils/pdf';
+import { rotatePages, generateThumbnail } from '../../utils/pdf';
 import { downloadFile, saveFileWithFSA } from '../../utils/file';
-import { FileDown, RotateCw } from 'lucide-react';
+import { FileDown, RotateCw, Loader2 } from 'lucide-react';
 import WorkspaceLayout from '../ui/WorkspaceLayout';
 import Button from '../ui/Button';
 
@@ -12,8 +12,38 @@ export default function RotateTool() {
   const [selectedPages, setSelectedPages] = useState<number[]>([]);
   const [angle, setAngle] = useState(90);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [thumbnails, setThumbnails] = useState<string[]>([]);
+  const [loadingThumbnails, setLoadingThumbnails] = useState(false);
 
   const selectedFileObj = files.find((f) => f.id === selectedFile);
+
+  useEffect(() => {
+    const loadThumbnails = async () => {
+      if (!selectedFileObj) {
+        setThumbnails([]);
+        return;
+      }
+
+      setLoadingThumbnails(true);
+      const newThumbnails: string[] = [];
+
+      try {
+        // Generate thumbnails for all pages
+        // In a real app with large PDFs, we might want to virtualize this or load on demand
+        for (let i = 0; i < selectedFileObj.pages; i++) {
+          const thumb = await generateThumbnail(selectedFileObj.file, i);
+          newThumbnails.push(thumb);
+        }
+        setThumbnails(newThumbnails);
+      } catch (error) {
+        console.error('Error generating thumbnails:', error);
+      } finally {
+        setLoadingThumbnails(false);
+      }
+    };
+
+    loadThumbnails();
+  }, [selectedFileObj]);
 
   const togglePage = (pageIndex: number) => {
     if (selectedPages.includes(pageIndex)) {
@@ -119,12 +149,20 @@ export default function RotateTool() {
         <h3 className="text-lg font-medium text-gray-900 dark:text-white">
           Select Pages to Rotate
         </h3>
-        <button
-          onClick={selectAll}
-          className="text-sm text-primary-600 dark:text-neon-cyan hover:text-primary-700 dark:hover:text-neon-cyan/80 font-medium"
-        >
-          Select All Pages
-        </button>
+        <div className="flex items-center gap-4">
+          {loadingThumbnails && (
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Loading previews...
+            </div>
+          )}
+          <button
+            onClick={selectAll}
+            className="text-sm text-primary-600 dark:text-neon-cyan hover:text-primary-700 dark:hover:text-neon-cyan/80 font-medium"
+          >
+            Select All Pages
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
@@ -133,19 +171,41 @@ export default function RotateTool() {
             <button
               key={i}
               onClick={() => togglePage(i)}
-              className={`aspect-[1/1.4] rounded-lg border-2 transition-all relative group ${selectedPages.includes(i)
-                ? 'border-neon-purple bg-neon-purple/10 shadow-[0_0_15px_rgba(160,107,255,0.3)]'
-                : 'border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 hover:border-neon-purple/50'
+              className={`aspect-[1/1.4] rounded-lg border-2 transition-all relative group overflow-hidden ${selectedPages.includes(i)
+                ? 'border-neon-purple shadow-[0_0_15px_rgba(160,107,255,0.3)]'
+                : 'border-gray-200 dark:border-white/10 hover:border-neon-purple/50'
                 }`}
             >
-              <div className="absolute inset-0 flex items-center justify-center text-lg font-bold text-gray-400 dark:text-gray-500 group-hover:text-neon-purple transition-colors">
+              {/* Thumbnail Image */}
+              {thumbnails[i] ? (
+                <img
+                  src={thumbnails[i]}
+                  alt={`Page ${i + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-white/5">
+                  <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                </div>
+              )}
+
+              {/* Page Number Badge */}
+              <div className="absolute top-2 left-2 w-6 h-6 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center text-xs font-medium text-white">
                 {i + 1}
               </div>
 
+              {/* Selection Overlay */}
+              <div className={`absolute inset-0 transition-colors ${selectedPages.includes(i)
+                  ? 'bg-neon-purple/20'
+                  : 'bg-transparent group-hover:bg-black/10 dark:group-hover:bg-white/10'
+                }`} />
+
               {/* Rotation Indicator Overlay */}
               {selectedPages.includes(i) && (
-                <div className="absolute inset-0 flex items-center justify-center bg-neon-purple/20 backdrop-blur-[1px] rounded-md">
-                  <RotateCw className="w-8 h-8 text-white drop-shadow-md" style={{ transform: `rotate(${angle}deg)` }} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black/60 backdrop-blur-sm p-2 rounded-full">
+                    <RotateCw className="w-6 h-6 text-white" style={{ transform: `rotate(${angle}deg)` }} />
+                  </div>
                 </div>
               )}
             </button>

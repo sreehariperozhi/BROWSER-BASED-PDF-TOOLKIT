@@ -48,6 +48,32 @@ function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [selectedTool, isSettingsOpen, setSelectedTool]);
 
+  // Global click listener for sound effects
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      // Play sound for interactive elements that aren't buttons (buttons handle their own sound)
+      // We check for specific classes or tag names that indicate interactivity
+      if (
+        target.tagName === 'A' ||
+        target.tagName === 'INPUT' ||
+        target.tagName === 'SELECT' ||
+        target.closest('[role="button"]') ||
+        target.closest('.clickable')
+      ) {
+        // Avoid double playing if the element is inside a button that already plays sound
+        if (!target.closest('button')) {
+          import('./utils/audioManager').then(({ audioManager }) => {
+            audioManager.playClick();
+          });
+        }
+      }
+    };
+
+    window.addEventListener('click', handleGlobalClick);
+    return () => window.removeEventListener('click', handleGlobalClick);
+  }, []);
+
   // Swipe gestures for mobile
   useSwipeGesture({
     onSwipeLeft: () => {
@@ -59,7 +85,6 @@ function App() {
   });
 
   // PWA logic temporarily disabled for development
-  /*
   useEffect(() => {
     // Register service worker for PWA
     if ('serviceWorker' in navigator) {
@@ -78,7 +103,6 @@ function App() {
       });
     }
   }, []);
-  */
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-dark-bg transition-colors duration-300 flex overflow-hidden relative">

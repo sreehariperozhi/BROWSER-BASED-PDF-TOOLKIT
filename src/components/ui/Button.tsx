@@ -1,5 +1,6 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
+import { audioManager } from '../../utils/audioManager';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
@@ -20,8 +21,15 @@ export default function Button({
     className = '',
     disabled,
     as: Component = 'button',
+    onClick,
     ...props
 }: ButtonProps) {
+    const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        if (!disabled && !isLoading) {
+            audioManager.playClick();
+        }
+        onClick?.(e);
+    };
     const baseStyles = 'relative inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-300 overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed';
 
     const variants = {
@@ -47,6 +55,7 @@ export default function Button({
         ${className}
       `}
             disabled={disabled || isLoading}
+            onClick={handleClick}
             {...props}
         >
             {/* Ripple Effect Container */}

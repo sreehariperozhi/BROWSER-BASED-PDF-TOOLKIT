@@ -3,6 +3,7 @@ import { TOOLS } from '../constants/tools';
 import { ToolType } from '../types';
 import * as Icons from 'lucide-react';
 import { useRef, useState } from 'react';
+import { audioManager } from '../utils/audioManager';
 
 const iconMap: Record<string, any> = {
   FileMerge: Icons.FileStack,
@@ -14,6 +15,10 @@ const iconMap: Record<string, any> = {
   Image: Icons.Image,
   FileText: Icons.FileText,
   FileImage: Icons.FileImage,
+  Shield: Icons.Shield,
+  Unlock: Icons.Unlock,
+  Stamp: Icons.Stamp,
+  FileCode: Icons.FileCode,
 };
 
 const colorClasses: Record<string, string> = {
@@ -54,7 +59,10 @@ function ToolCard({ tool, onClick }: { tool: any; onClick: () => void }) {
   return (
     <button
       ref={cardRef}
-      onClick={onClick}
+      onClick={() => {
+        audioManager.playClick();
+        onClick();
+      }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       style={{

@@ -10,6 +10,10 @@ import ExtractImagesTool from './tools/ExtractImagesTool';
 import ExtractTextTool from './tools/ExtractTextTool';
 import PDFToImagesTool from './tools/PDFToImagesTool';
 import ImagesToPDFTool from './tools/ImagesToPDFTool';
+import ProtectTool from './tools/ProtectTool';
+import UnlockTool from './tools/UnlockTool';
+import WatermarkTool from './tools/WatermarkTool';
+import MetadataTool from './tools/MetadataTool';
 import ProgressIndicator from './ProgressIndicator';
 
 const toolComponents: Record<string, React.ComponentType> = {
@@ -23,6 +27,10 @@ const toolComponents: Record<string, React.ComponentType> = {
   'extract-text': ExtractTextTool,
   'pdf-to-images': PDFToImagesTool,
   'images-to-pdf': ImagesToPDFTool,
+  protect: ProtectTool,
+  unlock: UnlockTool,
+  watermark: WatermarkTool,
+  metadata: MetadataTool,
 };
 
 export default function ToolView() {

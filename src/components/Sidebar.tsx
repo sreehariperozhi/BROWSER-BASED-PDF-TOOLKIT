@@ -1,5 +1,6 @@
 import { useStore } from '../store';
 import { ToolType } from '../types';
+import { audioManager } from '../utils/audioManager';
 import {
     FileStack,
     Scissors,
@@ -35,7 +36,10 @@ export default function Sidebar() {
                 {sidebarTools.map((tool) => (
                     <button
                         key={tool.id}
-                        onClick={() => setSelectedTool(tool.id as ToolType)}
+                        onClick={() => {
+                            audioManager.playClick();
+                            setSelectedTool(tool.id as ToolType);
+                        }}
                         className={`
               w-full flex items-center p-3 rounded-xl transition-all duration-300 relative group/btn
               ${selectedTool === tool.id
@@ -71,6 +75,7 @@ export default function Sidebar() {
 
             <div className="w-full px-3 mt-auto">
                 <button
+                    onClick={() => audioManager.playClick()}
                     className="w-full flex items-center p-3 rounded-xl hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 group/settings"
                 >
                     <div className="w-8 h-8 flex items-center justify-center">

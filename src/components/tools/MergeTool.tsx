@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useStore } from '../../store';
 import { mergePDFs } from '../../utils/pdf';
 import { downloadFile, saveFileWithFSA } from '../../utils/file';
+import { audioManager } from '../../utils/audioManager';
 import { FileDown } from 'lucide-react';
 import Button from '../ui/Button';
 import FileCard from '../ui/FileCard';
@@ -44,10 +45,12 @@ export default function MergeTool() {
       setProcessing({ isProcessing: false, progress: 100, message: 'Merge complete!' });
       setResultMessage(`Successfully merged ${selectedFiles.length} files into ${filename}`);
       setShowResult(true);
+      audioManager.playSuccess();
 
       setTimeout(() => setProcessing({ isProcessing: false, progress: 0, message: '' }), 2000);
     } catch (error) {
       console.error('Merge error:', error);
+      audioManager.playError();
       alert(`Error merging PDFs: ${error}`);
       setProcessing({ isProcessing: false, progress: 0, message: '' });
     } finally {

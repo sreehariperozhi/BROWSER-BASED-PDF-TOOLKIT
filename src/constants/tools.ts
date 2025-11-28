@@ -71,5 +71,33 @@ export const TOOLS: Tool[] = [
     icon: 'Image',
     color: 'amber',
   },
+  {
+    id: 'protect',
+    name: 'Protect PDF',
+    description: 'Encrypt and password protect PDF',
+    icon: 'Shield',
+    color: 'red',
+  },
+  {
+    id: 'unlock',
+    name: 'Unlock PDF',
+    description: 'Remove password from PDF',
+    icon: 'Unlock',
+    color: 'green',
+  },
+  {
+    id: 'watermark',
+    name: 'Watermark',
+    description: 'Add text watermark to PDF',
+    icon: 'Stamp',
+    color: 'blue',
+  },
+  {
+    id: 'metadata',
+    name: 'Metadata Editor',
+    description: 'Edit PDF properties and metadata',
+    icon: 'FileCode',
+    color: 'indigo',
+  },
 ];
 

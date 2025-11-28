@@ -6,9 +6,14 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Configure pdf.js worker
 import * as pdfjsLib from 'pdfjs-dist';
-// Use CDN for worker (can be replaced with local bundle)
-if (typeof window !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+import 'pdfjs-dist/build/pdf.worker.entry';
+
+// Set worker source
+if (typeof window !== 'undefined' && pdfjsLib.GlobalWorkerOptions) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.js',
+    import.meta.url
+  ).toString();
 }
 
 const rootElement = document.getElementById('root');

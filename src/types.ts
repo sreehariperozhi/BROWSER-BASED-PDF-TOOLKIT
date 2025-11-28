@@ -13,7 +13,7 @@ export interface PDFPage {
   thumbnail?: string;
 }
 
-export type ToolType = 
+export type ToolType =
   | 'merge'
   | 'split'
   | 'reorder'
@@ -24,6 +24,10 @@ export type ToolType =
   | 'extract-text'
   | 'pdf-to-images'
   | 'images-to-pdf'
+  | 'protect'
+  | 'unlock'
+  | 'watermark'
+  | 'metadata'
   | 'annotate';
 
 export interface Tool {
